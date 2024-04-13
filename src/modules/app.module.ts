@@ -1,23 +1,25 @@
-import { AppController } from '@/controllers/app.controller';
-import { AppService } from '@/services/app.service';
+import { AppService } from '@/services/services';
 import { Module } from '@nestjs/common';
 import { GatewayModule } from './gateway.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import {AuthUser, GroupChats, PrivateChats, PrivateMessage, User, UsersLogged } from '@/models/entities';
+import { AppController} from '@/controllers/controllers';
+import { UserModule } from './user.module';
+
 
 
 @Module({
   imports: [
+    UserModule,
     GatewayModule,
     ConfigModule.forRoot({ envFilePath: '.env.local', isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
-      host: process.env.DB_HOST,
-      port: parseInt(process.env.DB_PORT),
-      username: process.env.DB_USER,
-      password:process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
-      entities: [],
+       url: process.env.DB_URL,
+      synchronize:process.env.TYPEORM_SYNCHRONIZE_DB==="true"? true :false,
+      logging: "all",
+      entities: [User,PrivateMessage,PrivateChats,AuthUser,UsersLogged,GroupChats],
     })],
   controllers: [AppController],
   providers: [AppService],

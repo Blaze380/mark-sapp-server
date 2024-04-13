@@ -1,13 +1,12 @@
 import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
-export default class className {
-    @PrimaryGeneratedColumn()
-    id: number;
+export  class AuthUser {
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
     @Column()
     phoneNumber: string;
-    @Column()
-    verificationCode: string;
-    @Column()
-    iscodeUsed: boolean;
+
+    @Column({default:false})
+    isVerified:boolean
 };

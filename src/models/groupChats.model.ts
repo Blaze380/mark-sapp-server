@@ -1,17 +1,21 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.model";
+import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "@/models/entities";
 
 @Entity()
-export default class GroupChats {
-    @PrimaryGeneratedColumn()
-    id: number;
+export  class GroupChats {
+    @PrimaryGeneratedColumn("uuid")
+    id: string;
     @Column()
     groupName: string;
-    @Column()
-    admins: User[];
+
+    @ManyToMany(():typeof User => User, (user:User):GroupChats[] => user.groupChats)
+    @JoinTable({name:"participants_id"})
     groupParticipants: User[];
+
     @Column()
     dateCreated: string;
+
     @Column()
     profilePhoto: string;
+
 };

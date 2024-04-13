@@ -1,11 +1,21 @@
-import { Entity, PrimaryGeneratedColumn } from "typeorm";
-import { User } from "./user.model";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany,  OneToOne,  PrimaryGeneratedColumn } from "typeorm";
+import {PrivateMessage,User} from "@/models/entities";
+import { ChatWithUser } from "./chatWithUser.entity";
 
 @Entity()
-export default class PrivateChats {
-    @PrimaryGeneratedColumn()
-    chatId: number;
+export  class PrivateChats {
+    @PrimaryGeneratedColumn("uuid")
+    chatId: string;
 
-    chatWithUser: User;
+    @OneToOne(():typeof ChatWithUser=>(ChatWithUser),(chatWithUser:ChatWithUser):PrivateChats=>chatWithUser.privateChats)
+    chatWithUser: ChatWithUser;
 
+    @Column({ name: "user_id",type:"uuid" })
+    userId: string;
+    @ManyToOne((): typeof User => User, (user: User): PrivateChats[] => user.privateChats)
+        @JoinColumn({name:"user_id"})
+    user: User;
+
+    @OneToMany(():typeof PrivateMessage=>PrivateMessage,(privateMessages:PrivateMessage):PrivateChats=>privateMessages.privateChat)
+    privateMessages: PrivateMessage[];
 };

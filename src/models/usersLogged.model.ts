@@ -1,8 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @Entity()
-export default class UsersLogged {
-    @PrimaryGeneratedColumn()
+export  class UsersLogged {
+    @PrimaryColumn({unique:true})
     userId: string;
     @Column({unique:true})
     userSessionId: string;
