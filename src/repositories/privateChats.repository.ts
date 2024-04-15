@@ -9,13 +9,13 @@ export class PrivateChatsRepository{
     constructor (@InjectRepository(PrivateChats) private readonly privateChatsRepository: Repository<PrivateChats>) { }
 
 
-    public async savePrivateChat (user: User, privateChat: PrivateChats): Promise<void>{
-        if (user) {
-            if (user.id) {
-                privateChat.user = user;
-             await   this.privateChatsRepository.save(privateChat);
+    public async savePrivateChat (privateChat: PrivateChats): Promise<PrivateChats>{
+        if (privateChat.user) {
+            if (privateChat.user.id) {
+                return  await   this.privateChatsRepository.save(privateChat);
             }
         }
+        throw Error("Error while saving a chat")
     }
     public async updatePrivateChat (privateChat: PrivateChats): Promise<void>{
         privateChat = await this.privateChatsRepository.findOneBy(privateChat);
@@ -29,7 +29,7 @@ export class PrivateChatsRepository{
                 where: { user },
                 relations: {
                     privateMessages: true,
-                    chatWithUser: true
+                    chatWithUser: true,
                 },
                 select: {
                     chatId: true,

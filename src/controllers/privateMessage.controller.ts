@@ -2,7 +2,7 @@ import { MessageStatus } from "@/enums/MessageStatus.emun";
 import { UserGuard } from "@/guards/userGuard.guard";
 import { PrivateMessage } from "@/models/entities";
 import { PrivateMessageService } from "@/services/services";
-import { Body, Controller, HttpCode, Param, Post, UseGuards } from "@nestjs/common";
+import { Body, Controller, HttpCode,Post, UseGuards } from "@nestjs/common";
 
 @Controller("messages")
 @UseGuards(UserGuard)
@@ -11,8 +11,8 @@ export class privateMessageController{
 
     @HttpCode(201)
     @Post("/save/:privateChatId")
-    public savePrivateMessage (@Param() { privateChatId }: { privateChatId: string }, @Body() privateMessage: PrivateMessage): void{
-        this.privateMessageService.savePrivateMessage(privateChatId, privateMessage);
+    public savePrivateMessage (@Body() privateMessage: PrivateMessage): void{
+        this.privateMessageService.savePrivateMessage( privateMessage);
     }
     @HttpCode(200)
     @Post("/update")

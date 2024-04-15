@@ -22,8 +22,8 @@ export class UserService{
         client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
         .verifications.create({to: phoneNumber, channel: 'sms'})
         .then(():void => console.log(`OTP code sent Successfully to ${phoneNumber}!`))
-            .catch((error):void => {
-                console.log(error);
+            .catch((error:any):void => {
+                console.log(`Number Is probably not verified in twillio \n${error}`);
                 res.status(400).json({message:"O número fornecido não está verificado no console."})
             });
         }
@@ -32,12 +32,12 @@ export class UserService{
     public validateOptCode(phoneNumber:string,otpCode:string,res:Response):void{
         const client: twilio.Twilio = twilio(this.accountSid, this.authToken);
         const resMsg: ResponseMsg={ status: 200,message: "Aprovado", additionalContent:null };
+        this.authUserRepository.saveAuthenticatedUser(phoneNumber);
         client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
         .verificationChecks
         .create({to: phoneNumber, code: otpCode})
             .then((verification_check): void => {
                 if (verification_check.valid) {
-                    this.authUserRepository.saveAuthenticatedUser(phoneNumber);
                     resMsg.additionalContent={valid:verification_check.valid}
                     res.status(resMsg.status).json({ status: verification_check.valid,message:"Aprovado" });
                 }else{
@@ -47,8 +47,8 @@ export class UserService{
                     res.status(resMsg.status).json(resMsg);
                 }
             })
-            .catch((error):void => {
-                console.log(error);
+            .catch((error:any):void => {
+                console.log(`Error On validating Otp code \n${error}`);
                 res.status(400).json({message:"Algo deu errado."})
             });
     }

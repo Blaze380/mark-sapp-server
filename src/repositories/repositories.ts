@@ -4,4 +4,5 @@ export { ChatWithUserRepository } from '@/repositories/chatWithUser.repository';
 export {PrivateChatsRepository } from '@/repositories/privateChats.repository';
 export {PrivateMessageRepository  } from '@/repositories/privateMessage.repository';
  export {GroupChatsRepository  } from '@/repositories/groupChatsRepository.repository';
+ export {UsersLoggedRepository  } from '@/repositories/usersLogged.repository';
 // export {  } from '@/repositories/';
