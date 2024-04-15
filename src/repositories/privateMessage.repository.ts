@@ -1,5 +1,5 @@
 import { MessageStatus } from "@/enums/MessageStatus.emun";
-import { PrivateMessage } from "@/models/privateMessage.model";
+import { PrivateMessage } from "@/models/entities";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
@@ -8,7 +8,14 @@ import { Repository } from "typeorm";
 export class PrivateMessageRepository{
     constructor (@InjectRepository(PrivateMessage)private readonly privateMessageRepository: Repository<PrivateMessage>) { }
 
-    public async savePrivateMessage(privateMessage:PrivateMessage):Promise<void>{
+    public async savePrivateMessage ( privateMessage: PrivateMessage): Promise<void>{
+        if (privateMessage.privateChat) {
+            if (privateMessage.privateChat.chatId) {
+                await this.privateMessageRepository.save(privateMessage);
+            }
+        }
+    }
+    public async updatePrivateMessage(privateMessage:PrivateMessage):Promise<void>{
         await this.privateMessageRepository.save(privateMessage);
     }
     public getUserPrivateChatMessages (privateChatId: string): Promise<Array<PrivateMessage>>{

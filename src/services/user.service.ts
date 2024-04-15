@@ -1,27 +1,29 @@
 import { User } from "@/models/user.model";
 import { AuthUserRepository, UserRepository } from "@/repositories/repositories";
 import { ResponseMsg } from "@/types/responseMessage.type";
-import {  Injectable,  } from "@nestjs/common";
+import {   HttpStatus, Injectable, } from "@nestjs/common";
+
+import { JwtService } from "@nestjs/jwt";
 import { Response } from "express";
 import  * as twilio from "twilio";
 @Injectable()
 export class UserService{
 
-    constructor (private readonly userRepository:UserRepository,private readonly authUserRepository:AuthUserRepository) {}
+    constructor (private readonly userRepository: UserRepository,
+        private readonly authUserRepository: AuthUserRepository,
+        private readonly jwtService:JwtService) { }
 
     private readonly accountSid: string = process.env.TWILIO_ACCOUNT_SID;
     private readonly authToken: string = process.env.TWILIO_AUTH_TOKEN;
-    private readonly responseMsg: ResponseMsg;
 
     public  sendPhoneNumberOTP (phoneNumber: string,res:Response) :void{
         const client:twilio.Twilio = twilio(this.accountSid, this.authToken);
 
         client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
-        .verifications
-        .create({to: phoneNumber, channel: 'sms'})
+        .verifications.create({to: phoneNumber, channel: 'sms'})
         .then(():void => console.log(`OTP code sent Successfully to ${phoneNumber}!`))
-            .catch((error):void => {
-                console.log(error);
+            .catch((error:any):void => {
+                console.log(`Number Is probably not verified in twillio \n${error}`);
                 res.status(400).json({message:"O número fornecido não está verificado no console."})
             });
         }
@@ -30,6 +32,7 @@ export class UserService{
     public validateOptCode(phoneNumber:string,otpCode:string,res:Response):void{
         const client: twilio.Twilio = twilio(this.accountSid, this.authToken);
         const resMsg: ResponseMsg={ status: 200,message: "Aprovado", additionalContent:null };
+        this.authUserRepository.saveAuthenticatedUser(phoneNumber);
         client.verify.v2.services(process.env.TWILIO_SERVICE_SID)
         .verificationChecks
         .create({to: phoneNumber, code: otpCode})
@@ -44,33 +47,47 @@ export class UserService{
                     res.status(resMsg.status).json(resMsg);
                 }
             })
-            .catch((error):void => {
-                console.log(error);
+            .catch((error:any):void => {
+                console.log(`Error On validating Otp code \n${error}`);
                 res.status(400).json({message:"Algo deu errado."})
             });
     }
     public saveNewUser (user: User,res:Response): void{
         let resMsg: ResponseMsg;
         this.authUserRepository.isUserAuthenticated(user.phoneNumber)
-            .then((isUserAuthenticated: boolean): void => {
+            .then(async (isUserAuthenticated: boolean): Promise<void> => {
                 if (!isUserAuthenticated) {
-                    this.validateUserBeforeSave(user, res).then((exists:boolean): void => {
-                        if (!exists) {
-                            this.userRepository.saveUser(user)
-                            .then((newUser: User): void => {
-                                resMsg= { status: 201,message: "User created successfully", additionalContent:{user:newUser} };
-                                 res.status(resMsg.status).json(resMsg);
+                        // throw new UnauthorizedException("O Número de telefone não está verificado!\ncontacte:+258857483995");
+                    res.status(HttpStatus.UNAUTHORIZED).json("O Número de telefone não está verificado!\ncontacte:+258857483995");
+                }
+                const exists: boolean = await this.validateUserBeforeSave(user, res);
+                if (!exists) {
+                    this.userRepository.saveUser(user)
+                        .then(async (newUser: User): Promise<void> => {
+                            const token: string = await this.generateTokenToUser(newUser.id, newUser.userName);
+                            resMsg = { status: 201, message: "User created successfully.", additionalContent: { access_token:token } };
+                            res.status(resMsg.status).json(resMsg);
+                            console.log("ALGO ESTÁ ERRADO!")
                         });
-                        }
-                    })
-                } else {
-                    resMsg ={status:401,message:"O Número de telefone não está verificado!",additionalContent:null}
-                    res.status(401).json(resMsg);
                 }
              });
     }
 
-    // public updateUser (user: User, res: Responser): void{
+    private async generateTokenToUser (userId: string, userName: string): Promise<string>{
+        if(!userId && !userName){
+            //rthrow new HttpException("Algo deu errado!", HttpStatus.INTERNAL_SERVER_ERROR);
+            return "null";
+        }
+        const payload = {
+            sub: userId,
+            username: userName,
+        };
+        const jwtToken: string = await this.jwtService.signAsync(payload);
+        return jwtToken;
+    }
+
+
+    // public updateUser (user: User, res: Responser):  void{
 
     // }
     private async validateUserBeforeSave (user: User, res: Response): Promise<boolean> {
@@ -89,11 +106,17 @@ export class UserService{
         return false;
     }
 
-    public getUserById (userId: string,res:Response):void {
+    public getUserById(userId: string,res:Response):void {
         this.userRepository.findUserById(userId)
             .then((user: User): void => {
                 res.status(200).json(user);
-            });
+            }).catch((error: any): void => {
+                console.log(error)
+                res.status(400).json("Algo deu errado!");
+            })
     }
 
+    public updateUser (user:User): void{
+        this.userRepository.saveUser(user);
+    }
 }
