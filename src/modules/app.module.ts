@@ -1,9 +1,9 @@
-import {AuthUser, ChatWithUser, GroupChats, PrivateChats, PrivateMessage, User, UsersLogged } from '@/models/entities';
+import { AuthenticatedUsers, GroupChats, PrivateChats, PrivateMessages, User, UsersOnline } from '@/models/entities';
 import { AppService } from '@/services/services';
 import { Module } from '@nestjs/common';
 import { GatewayModule } from './gateway.module';
 import { ConfigModule } from '@nestjs/config';
-import { AppController} from '@/controllers/controllers';
+import { AppController } from '@/controllers/controllers';
 import { UserModule } from './user.module';
 import { MulterModule } from '@nestjs/platform-express';
 import { PrivateChatsModule } from './privateChats.module';
@@ -25,16 +25,16 @@ import { JwtModule } from '@nestjs/jwt';
       url: process.env.DB_URL,
       synchronize: process.env.TYPEORM_SYNCHRONIZE_DB === "true" ? true : false,
       logging: "all",
-      entities: [User, PrivateMessage, PrivateChats, AuthUser, UsersLogged, GroupChats, ChatWithUser],
+      entities: [User, PrivateMessages, PrivateChats, AuthenticatedUsers, UsersOnline, GroupChats,],
     }),
     JwtModule.register({
       global: true,
       secret: process.env.JWT_SECRET,
-      signOptions: {expiresIn: "60d",}
+      signOptions: { expiresIn: "60d", }
     }),
   ],
 
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }

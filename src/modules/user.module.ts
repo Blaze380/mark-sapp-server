@@ -1,20 +1,20 @@
-import {  Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from '@/services/services';
 import { UserController } from '@/controllers/controllers';
-import { AuthUser, ChatWithUser, GroupChats,   User } from '@/models/entities';
-import { AuthUserRepository, ChatWithUserRepository, GroupChatsRepository,  UserRepository } from '@/repositories/repositories';
+import { AuthenticatedUsers, GroupChats, User } from '@/models/entities';
+import { AuthenticatedUsersRepository, GroupChatsRepository, UserRepository } from '@/repositories/repositories';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, AuthUser, ChatWithUser,  GroupChats])],
-  providers: [UserService,UserRepository,AuthUserRepository,ChatWithUserRepository,GroupChatsRepository],
+    TypeOrmModule.forFeature([User, AuthenticatedUsers, GroupChats])],
+  providers: [UserService, UserRepository, , AuthenticatedUsersRepository, GroupChatsRepository],
   controllers: [UserController],
 })
 export class UserModule {
   // configure(consumer: MiddlewareConsumer):void {
   //   consumer
-  //     .apply(HttpExceptionFilter)
+  //     .apply(HttpExceptionFilt er)
   //     .forRoutes(UserService);
   // }
 

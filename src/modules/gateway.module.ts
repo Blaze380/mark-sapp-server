@@ -1,12 +1,12 @@
 import { AppGateway } from '@/gateways/app.gateway';
-import { UsersLogged } from '@/models/entities';
-import { UsersLoggedRepository } from '@/repositories/repositories';
-import { UsersLoggedService } from '@/services/services';
+import { UsersOnline } from '@/models/entities';
+import { UsersOnlineRepository } from '@/repositories/repositories';
+import { UsersOnlineService } from '@/services/services';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
-    imports:[TypeOrmModule.forFeature([UsersLogged])],
-    providers: [AppGateway,UsersLoggedRepository,UsersLoggedService,],
+    imports: [TypeOrmModule.forFeature([UsersOnline])],
+    providers: [AppGateway, UsersOnlineRepository, UsersOnlineService,],
 })
-export class GatewayModule{ }
+export class GatewayModule { }

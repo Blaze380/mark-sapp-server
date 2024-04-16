@@ -1,31 +1,31 @@
-import { AuthUser } from "@/models/authUser.model";
+import { AuthenticatedUsers } from "@/models/entities";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class AuthUserRepository{
+export class AuthenticatedUsersRepository {
 
-    constructor (@InjectRepository(AuthUser) private readonly authRepository: Repository<AuthUser>) { }
+    constructor (@InjectRepository(AuthenticatedUsers) private readonly authenticatedUsersRepository: Repository<AuthenticatedUsers>) { }
 
-    public saveAuthenticatedUser (phoneNumber: string): void{
-        this.authRepository.save({ phoneNumber: phoneNumber, isVerified: true });
+    public saveAuthenticatedUser (phoneNumber: string): void {
+        this.authenticatedUsersRepository.save({ phoneNumber: phoneNumber, isVerified: true });
     }
 
-    public async isUserAuthenticated (phoneNumber: string): Promise<boolean>{
-        let authUser: AuthUser;
-            try {
-                 authUser = await this.authRepository.findOne({
-                    where: {
-                        phoneNumber: phoneNumber
-                    }
-                 });
-                if (!authUser) {
-                    return false;
+    public async isUserAuthenticated (phoneNumber: string): Promise<boolean> {
+        let authenticatedUser: AuthenticatedUsers;
+        try {
+            authenticatedUser = await this.authenticatedUsersRepository.findOne({
+                where: {
+                    phoneNumber: phoneNumber
                 }
-            } catch (error) {
+            });
+            if (!authenticatedUser) {
                 return false;
             }
-        return authUser.isVerified;
+        } catch (error) {
+            return false;
+        }
+        return authenticatedUser.isVerified;
     }
 }

@@ -1,48 +1,54 @@
-import { MessageStatus } from "@/enums/MessageStatus.emun";
-import { PrivateMessage } from "@/models/entities";
+import { MessageStatus } from "@/enums/MessageStatus.enum";
+import { PrivateChats, PrivateMessages } from "@/models/entities";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 
 @Injectable()
-export class PrivateMessageRepository{
-    constructor (@InjectRepository(PrivateMessage)private readonly privateMessageRepository: Repository<PrivateMessage>) { }
+export class PrivateMessageRepository {
+    constructor (@InjectRepository(PrivateMessages) private readonly privateMessagesRepository: Repository<PrivateMessages>) { }
 
-    public async savePrivateMessage ( privateMessage: PrivateMessage): Promise<void>{
+    public async savePrivateMessage (privateMessage: PrivateMessages): Promise<void> {
         if (privateMessage.privateChat) {
             if (privateMessage.privateChat.chatId) {
-                await this.privateMessageRepository.save(privateMessage);
+                await this.privateMessagesRepository.save(privateMessage);
             }
         }
     }
-    public async updatePrivateMessage(privateMessage:PrivateMessage):Promise<void>{
-        await this.privateMessageRepository.save(privateMessage);
+    public async updatePrivateMessage (privateMessage: PrivateMessages): Promise<void> {
+        await this.privateMessagesRepository.save(privateMessage);
     }
-    public getUserPrivateChatMessages (privateChatId: string): Promise<Array<PrivateMessage>>{
-        return this.privateMessageRepository.find({
-            where: { privateChatId:privateChatId },
+    public getUserPrivateChatMessages (privateChatId: string): Promise<Array<PrivateMessages>> {
+
+        const privateChat: PrivateChats = new PrivateChats();
+        privateChat.chatId = privateChatId;
+        return this.privateMessagesRepository.find({
+            where: { privateChat },
             relations: {
-                receiver: true,
-                sender:true,
+                sender: true,
+                messageType: true,
             },
             select: {
                 id: true,
                 sender: {
-                    id:true,
+                    id: true,
                 },
-                receiver: {
-                    id:true,
+                messageType: {
+                    text: true,
+                    messageType: true,
                 },
-                message: true,
                 dateSent: true,
-                messageStatus:true
+                messageStatus: true,
             }
         })
     }
 
-    public async updateMessageStatus (messageId: string, messageStatus: MessageStatus): Promise<void>{
-        const message: PrivateMessage = await this.privateMessageRepository.findOne({ where: { id: messageId } });
+    /**
+     * Se lançar exceção por causa de UUID, envia um objeto messageStatus com id dentro
+     */
+    public async updateMessageStatus (messageId: string, messageStatus: MessageStatus): Promise<void> {
+        const message: PrivateMessages = await this.privateMessagesRepository.findOne({ where: { id: messageId } });
         message.messageStatus = messageStatus;
-        await this.privateMessageRepository.save(message);
+        await this.privateMessagesRepository.save(message);
     }
 }
