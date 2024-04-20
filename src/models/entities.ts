@@ -9,4 +9,6 @@ export { UserPermissions } from '@/models/userPermissions.entity';
 export { MessageType } from '@/models/messageType.entity';
 export { GroupMessageType } from '@/models/groupMessageType.entity';
 export { GroupMessages } from '@/models/groupMessages.entity';
+export { IncomingMessages } from '@/models/incomingMessages.entity';
+//export { GroupIncomingMessages } from '@/models/groupIncomingMessages.entity';
 //export { } from '@/models/';

@@ -10,5 +10,8 @@ export class AuthenticatedUsers {
     phoneNumber: string;
 
     @Column({ default: false })
-    isVerified: boolean
+    isVerified: boolean;
+
+    @Column({ default: false })
+    signedUpFirstTime: boolean
 };

@@ -12,7 +12,11 @@ export class UserRepository {
         return await this.userRepository.findOneBy(user);
     }
 
-
+    public async updateProfilePhoto (profilePhotoName: string, userId: string): Promise<void> {
+        const user: User = await this.findUserById(userId);
+        user.profilePhoto = profilePhotoName;
+        await this.updateUser(user);
+    }
     public async saveUser (user: User): Promise<User> {
         return await this.userRepository.save(user);
     }

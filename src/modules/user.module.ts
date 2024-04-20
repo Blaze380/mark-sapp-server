@@ -2,13 +2,13 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserService } from '@/services/services';
 import { UserController } from '@/controllers/controllers';
-import { AuthenticatedUsers, GroupChats, User } from '@/models/entities';
-import { AuthenticatedUsersRepository, GroupChatsRepository, UserRepository } from '@/repositories/repositories';
+import { AuthenticatedUsers, GroupChats, User, UserPermissions } from '@/models/entities';
+import { AuthenticatedUsersRepository, GroupChatsRepository, UserRepository, UserPermissionsRepository } from '@/repositories/repositories';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, AuthenticatedUsers, GroupChats])],
-  providers: [UserService, UserRepository, , AuthenticatedUsersRepository, GroupChatsRepository],
+    TypeOrmModule.forFeature([User, AuthenticatedUsers, GroupChats, UserPermissions])],
+  providers: [UserService, UserRepository, AuthenticatedUsersRepository, GroupChatsRepository, UserPermissionsRepository],
   controllers: [UserController],
 })
 export class UserModule {

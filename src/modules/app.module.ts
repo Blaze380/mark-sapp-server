@@ -1,4 +1,4 @@
-import { AuthenticatedUsers, GroupChats, PrivateChats, PrivateMessages, User, UsersOnline } from '@/models/entities';
+import { AuthenticatedUsers, GroupChats, GroupMessageType, GroupMessages, IncomingMessages, MessageType, PrivateChats, PrivateMessages, User, UserPermissions, UsersOnline } from '@/models/entities';
 import { AppService } from '@/services/services';
 import { Module } from '@nestjs/common';
 import { GatewayModule } from './gateway.module';
@@ -25,7 +25,7 @@ import { JwtModule } from '@nestjs/jwt';
       url: process.env.DB_URL,
       synchronize: process.env.TYPEORM_SYNCHRONIZE_DB === "true" ? true : false,
       logging: "all",
-      entities: [User, PrivateMessages, PrivateChats, AuthenticatedUsers, UsersOnline, GroupChats,],
+      entities: [User, PrivateMessages, PrivateChats, AuthenticatedUsers, UsersOnline, GroupChats, GroupMessages, UserPermissions, MessageType, GroupMessageType, IncomingMessages],
     }),
     JwtModule.register({
       global: true,

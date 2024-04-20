@@ -1,5 +1,5 @@
 import { ManyToMany, Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, } from 'typeorm';
-import { GroupChats, PrivateChats, PrivateMessages, UserPermissions } from '@/models/entities';
+import { GroupChats, PrivateChats, IncomingMessages, PrivateMessages, UserPermissions } from '@/models/entities';
 import { GroupMessages } from './groupMessages.entity';
 
 
@@ -8,7 +8,7 @@ export class User {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ unique: true, nullable: false })
+    @Column({ unique: true, nullable: true })
     userName: string;
 
 
@@ -21,6 +21,9 @@ export class User {
 
     @Column({ default: "First Time In Mark Sapp :)" })
     biography: string;
+
+    @OneToMany((): typeof IncomingMessages => IncomingMessages, (incomingMessages: IncomingMessages): User => incomingMessages.sender)
+    incomingMessages: IncomingMessages[];
 
     @OneToOne((): typeof UserPermissions => UserPermissions, (userPermissions: UserPermissions): User => userPermissions.user)
     userPermissions: UserPermissions;

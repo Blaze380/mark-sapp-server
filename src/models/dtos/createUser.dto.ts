@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsNotEmptyObject, IsPhoneNumber, Length, } from "class-validator";
+import { IsNotEmpty, IsPhoneNumber, Length, } from "class-validator";
 import { UserPermissions } from "../userPermissions.entity";
 
 
@@ -15,7 +15,7 @@ export class CreateUserDto {
     profilePhoto: string;
     biography: string;
 
-    @IsNotEmptyObject({ nullable: false }, { message: "As permissões não devem ser nulas!", always: true })
+    //@IsNotEmptyObject({ nullable: false }, { message: "As permissões não devem ser nulas!", always: true })
     userPermissions: UserPermissions;
 }
 
