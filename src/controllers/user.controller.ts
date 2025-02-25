@@ -31,7 +31,7 @@ export  class UserController {
     @UseGuards(UserGuard)
     @Get('/download-profile-photo/:photoId')
     public downloadProfilePhoto (@Res() res: Response, @Param() {photoId}: {photoId:string}): void {
-         const imgsPath:string = `../.${this.configService.get<string>("UPLOADED_IMAGES_PATH")}/`
+         const imgsPath = `../.${this.configService.get<string>("UPLOADED_IMAGES_PATH")}/`
          console.log(photoId)
          const profilePhotoPath:string = path.join(__dirname, imgsPath + photoId);
         res.sendFile(profilePhotoPath);
